@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaterDrop - Smart Water Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        /* Custom CSS for animations and effects */
+        .blurry-load {
+            animation: blurIn 1.5s ease-out forwards;
+        }
+        
+        @keyframes blurIn {
+            from { filter: blur(20px); opacity: 0; }
+            to { filter: blur(0); opacity: 1; }
+        }
+        
+        .wave-effect::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: 0.3s;
+        }
+        
+        .wave-effect:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .testimonial-slide {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        
+        .water-drop {
+            animation: drop 2s infinite ease-in-out;
+        }
+        
+        @keyframes drop {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .container-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+
+        /* Replace the existing blurry-load animation */
+        .blurry-load {
+            animation: blurOut 1.5s ease-out forwards;
+        }
+        
+        @keyframes blurOut {
+            from { filter: blur(0); opacity: 1; }
+            to { filter: blur(20px); opacity: 0; }
+        }
+
+        /* Add a class for the initial state */
+        .clear-state {
+            filter: blur(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 smooth-scroll">
+    <!-- Blurry Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center clear-state">
+        <div class="text-center">
+            <div class="water-drop text-blue-500 text-6xl mb-4">
+                <i class="fas fa-tint"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800">WaterDrop</h1>
+            <p class="text-gray-600 mt-2">Pure Water, Delivered Smart</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-tint text-blue-500 text-2xl"></i>
+                <span class="text-xl font-bold text-gray-800">WaterDrop</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-6">
+                <a href="#home" class="text-gray-700 hover:text-blue-500 transition">Home</a>
+                <a href="#products" class="text-gray-700 hover:text-blue-500 transition">Products</a>
+                <a href="#offers" class="text-gray-700 hover:text-blue-500 transition">Offers</a>
+                <a href="#testimonials" class="text-gray-700 hover:text-blue-500 transition">Testimonials</a>
+                <a href="#contact" class="text-gray-700 hover:text-blue-500 transition">Contact</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Cart Button -->
+                <button id="cartBtn" class="relative cursor-pointer">
+                    <i class="fas fa-shopping-cart text-gray-700 text-xl"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </button>
+
+                <!-- User Profile -->
+                <div id="userProfileContainer" class="relative hidden">
+                    <button id="profileBtn" class="flex items-center space-x-2 focus:outline-none">
+                        <img id="userPhoto" src="" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50">
+                        <div class="px-4 py-3 border-b">
+                            <p id="userEmail" class="text-sm text-gray-600"></p>
+                        </div>
+                        <a href="#orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Orders</a>
+                        <button onclick="signOut()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Sign Out</button>
+                    </div>
+                </div>
+
+                <!-- Login/Register Buttons (shown when logged out) -->
+                <div id="authButtons">
+                    <a href="login.html" class="px-4 py-2 text-blue-500 hover:bg-blue-50 rounded-full transition">Login</a>
+                    <a href="register.html" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition">Register</a>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white py-2 px-4 shadow-lg">
+            <a href="#home" class="block py-2 text-gray-700 hover:text-blue-500 transition">Home</a>
+            <a href="#products" class="block py-2 text-gray-700 hover:text-blue-500 transition">Products</a>
+            <a href="#offers" class="block py-2 text-gray-700 hover:text-blue-500 transition">Offers</a>
+            <a href="#testimonials" class="block py-2 text-gray-700 hover:text-blue-500 transition">Testimonials</a>
+            <a href="#contact" class="block py-2 text-gray-700 hover:text-blue-500 transition">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-16 md:py-24 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Pure Water, <span class="text-blue-500">Delivered Smart</span></h1>
+                <p class="text-lg text-gray-600 mb-6">Get premium quality water delivered to your doorstep at your preferred time. Our smart delivery system ensures you never run out of water.</p>
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <button id="orderNowBtn" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium"
+                        onclick="document.getElementById('products').scrollIntoView({ behavior: 'smooth' });">
+                        Order Now
+                    </button>
+                    <button id="learnMoreBtn" class="px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition font-medium"
+                        onclick="document.getElementById('testimonials').scrollIntoView({ behavior: 'smooth' });">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1562077772-3bd90403f7f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Water Delivery" class="rounded-xl shadow-xl w-full max-w-md">
+                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center space-x-2">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i class="fas fa-check text-green-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">300+ Happy Customers</p>
+                                <div class="flex text-yellow-400 text-xs">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Our Water Containers</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Choose from our premium quality water containers in various sizes to suit your needs.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <!-- Product 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.5fdfe01c-9ccd-4fbc-945b-058297f4d9a4.png" alt="2L Bottle" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">2L Bottle</h3>
+                        <p class="text-gray-600 mb-4">Perfect for individuals or small families</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-blue-500">₹30</span>
+                            <button class="add-to-cart px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" data-id="1" data-name="2L Bottle" data-price="30">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.b5edd257-b0a7-4f70-a184-651755e89d13.png" alt="5L Bottle" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">5L Bottle</h3>
+                        <p class="text-gray-600 mb-4">Ideal for small families or offices</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-blue-500">₹60</span>
+                            <button class="add-to-cart px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" data-id="2" data-name="5L Bottle" data-price="60">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.7a5210d8-e8c1-4b73-b9f9-2f9b82f41b63.png" alt="10L Bottle" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">10L Bottle</h3>
+                        <p class="text-gray-600 mb-4">Great for medium families</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-blue-500">₹100</span>
+                            <button class="add-to-cart px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" data-id="3" data-name="10L Bottle" data-price="100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.eabe4a50-c11f-4eaf-8fe7-4260482d2045.png" alt="20L Bottle" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">20L Bottle</h3>
+                        <p class="text-gray-600 mb-4">Perfect for large families</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-blue-500">₹180</span>
+                            <button class="add-to-cart px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" data-id="4" data-name="20L Bottle" data-price="180">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 5 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.ecdd7393-2398-4f23-aaa2-34c3448ba850.png" alt="30L Bottle" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">30L Bottle</h3>
+                        <p class="text-gray-600 mb-4">Ideal for offices or events</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-blue-500">₹250</span>
+                            <button class="add-to-cart px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" data-id="5" data-name="30L Bottle" data-price="250">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section id="offers" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Special Offers</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Check out our latest offers and discounts on water containers.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Offer 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.9e1fdb52-f20e-4177-9742-306ef99e71c8.png" alt="Buy 1 Get 1 Free" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Buy 1 Get 1 Free</h3>
+                        <div class="offer-card relative cursor-pointer group" onclick="flipOfferCard(this)">
+                            <div class="offer-card-inner transition-transform duration-500 transform">
+                                <!-- Front Side -->
+                                <div class="offer-card-front">
+                                    <p class="text-gray-600 mb-4">On all 10L bottles this month!</p>
+                                </div>
+                                <!-- Back Side (hidden by default) -->
+                                <div class="offer-card-back absolute inset-0 bg-blue-100 flex flex-col items-center justify-center rounded-xl shadow-md hidden">
+                                    <span class="text-lg font-semibold text-gray-800 mb-2">Your Coupon Code:</span>
+                                    <span class="coupon-code text-2xl font-mono bg-white px-4 py-2 rounded-lg shadow-inner mb-2"></span>
+                                    <span class="text-xs text-gray-600">Valid for one use per user</span>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                        function generateCouponCode() {
+                            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                            let code = 'WD-';
+                            for (let i = 0; i < 6; i++) {
+                                code += chars.charAt(Math.floor(Math.random() * chars.length));
+                            }
+                            return code;
+                        }
+
+                        function flipOfferCard(card) {
+                            try {
+                                const front = card.querySelector('.offer-card-front');
+                                const back = card.querySelector('.offer-card-back');
+                                
+                                if (!front || !back) {
+                                    console.error('Card elements not found');
+                                    return;
+                                }
+
+                                const codeSpan = back.querySelector('.coupon-code');
+                                if (!codeSpan) {
+                                    console.error('Coupon code element not found');
+                                    return;
+                                }
+
+                                // Check if user is logged in
+                                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                                if (!isLoggedIn) {
+                                    // Save current page as return URL
+                                    localStorage.setItem('returnUrl', window.location.href);
+                                    window.location.href = 'login.html';
+                                    return;
+                                }
+
+                                // Check if coupon already claimed
+                                const userEmail = localStorage.getItem('userEmail');
+                                const couponKey = `waterdrop_offer_coupon_${userEmail}`;
+
+                                if (localStorage.getItem(couponKey)) {
+                                    codeSpan.textContent = localStorage.getItem(couponKey);
+                                    back.querySelector('.text-xs').textContent = "Coupon already claimed";
+                                } else {
+                                    const code = generateCouponCode();
+                                    codeSpan.textContent = code;
+                                    localStorage.setItem(couponKey, code);
+                                }
+
+                                // Add animation classes
+                                front.classList.add('hidden');
+                                back.classList.remove('hidden');
+
+                                // Show success message
+                                const message = document.createElement('div');
+                                message.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                                message.textContent = localStorage.getItem(couponKey) ? 'Showing your claimed coupon' : 'Coupon claimed successfully!';
+                                document.body.appendChild(message);
+
+                                setTimeout(() => {
+                                    message.remove();
+                                }, 3000);
+
+                            } catch (error) {
+                                console.error('Error in flipOfferCard:', error);
+                                
+                                // Show error message
+                                const errorMessage = document.createElement('div');
+                                errorMessage.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                                errorMessage.textContent = 'Something went wrong. Please try again.';
+                                document.body.appendChild(errorMessage);
+
+                                setTimeout(() => {
+                                    errorMessage.remove();
+                                }, 3000);
+                            }
+                        }
+                        </script>
+                        <span class="text-xl font-bold text-blue-500">Limited Time Offer</span>
+                    </div>
+                </div>
+                
+                <!-- Offer 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.5544259f-7618-4f00-afce-6e51fd386943.png" alt="20% Off on 5L Bottles" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">20% Off on 5L Bottles</h3>
+                        <p class="text-gray-600 mb-4">This week only!</p>
+                        <span class="text-xl font-bold text-blue-500">Grab the deal now!</span>
+                    </div>
+                </div>
+                <!-- Offer 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition duration-300 container-hover">
+                    <div class="p-4 flex justify-center">
+                        <img src="https://bing.com/th/id/BCO.fc4d36f3-f4ec-40bc-9351-4fc1e0e19e98.png" alt="Free Delivery on Orders Above ₹500" class="h-40 object-contain">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Free Delivery on Orders Above ₹500</h3>
+                        <p class="text-gray-600 mb-4">Order now and save on delivery charges!</p>
+                        <span class="text-xl font-bold text-blue-500">Limited Time Offer</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">What Our Customers Say</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Hear from our satisfied customers about their experience with WaterDrop.</p>
+            </div>
+            
+            <div class="flex overflow-x-auto space-x-6">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-slide bg-gray-50 rounded-xl shadow-md p-6 w-80">
+                    <div class="flex items-center mb-4">
+                        <img src="https://bing.com/th/id/BCO.bfd346b9-c16d-4e7d-a086-bcdd369aa880.png" alt="Customer 1" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">John Doe</h4>
+                            <p class="text-sm text-gray-600">Verified Customer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"WaterDrop has been a lifesaver for our family. The delivery is always on time and the water quality is top-notch!"</p>
+                    <div class="flex items-center">
+                        <div class="flex text-yellow-400 text-xs mr-2">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-xs text-gray-500">(5/5)</span>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-slide bg-gray-50 rounded-xl shadow-md p-6 w-80">
+                    <div class="flex items-center mb-4">
+                        <img src="https://bing.com/th/id/BCO.98a0293a-5236-4927-a818-050553c692d7.png" alt="Customer 2" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">Jane Smitha</h4>
+                            <p class="text-sm text-gray-600">Verified Customer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"I love the convenience of WaterDrop. The app is user-friendly and the delivery is always prompt."</p>
+                    <div class="flex items-center">
+                        <div class="flex text-yellow-400 text-xs mr-2">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="text-xs text-gray-500">(4.5/5)</span>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-slide bg-gray-50 rounded-xl shadow-md p-6 w-80">
+                    <div class="flex items-center mb-4">
+                        <img src="https://bing.com/th/id/BCO.fa876f67-d9fe-476e-8239-b49fc8a43259.png" alt="Customer 3" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">Alice Johnson</h4>
+                            <p class="text-sm text-gray-600">Verified Customer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"The water containers are of excellent quality and the prices are very reasonable. Highly recommend!"</p>
+                    <div class="flex items-center">
+                        <div class="flex text-yellow-400 text-xs mr-2">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="text-xs text-gray-500">(4.2/5)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Get In Touch</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you!</p>
+            </div>
+            
+            <div class="max-w-lg mx-auto">
+                <form id="contactForm" class="bg-gray-50 p-8 rounded-xl shadow-md" onsubmit="sendEmail(event)">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                            <input type="text" id="name" name="name" required 
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" required 
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                            <textarea id="message" name="message" rows="4" required 
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">
+                            <span id="submitText">Send Message</span>
+                            <span id="submitSpinner" class="hidden">
+                                <i class="fas fa-spinner fa-spin"></i> Sending...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+
+    <footer class="bg-gray-800 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center md:text-left mb-4 md:mb-0">
+                    <span class="text-white text-lg font-semibold">WaterDrop</span>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#home" class="text-gray-300 hover:text-white transition">Home</a>
+                    <a href="#products" class="text-gray-300 hover:text-white transition">Products</a>
+                    <a href="#offers" class="text-gray-300 hover:text-white transition">Offers</a>
+                    <a href="#testimonials" class="text-gray-300 hover:text-white transition">Testimonials</a>
+                    <a href="#contact" class="text-gray-300 hover:text-white transition">Contact</a>
+                </div>
+            </div>
+            
+            <div class="mt-8 border-t border-gray-700 pt-4 text-center">
+                <p class="text-gray-400 text-sm">&copy; 2025 WaterDrop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('loadingOverlay');
+            
+            // Add click event to start blur animation
+            overlay.addEventListener('click', () => {
+                overlay.classList.remove('clear-state');
+                overlay.classList.add('blurry-load');
+                
+                // Remove overlay after animation completes
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 1500);
+            });
+        });
+    </script>
+    <script>
+    // Cart functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        // Update cart count
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = parseInt(button.dataset.id);
+                const name = button.dataset.name;
+                const price = parseInt(button.dataset.price);
+                
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const existingItem = cart.find(item => item.id === id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({ id, name, price, quantity: 1 });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+                successMessage.textContent = 'Added to cart!';
+                document.body.appendChild(successMessage);
+                
+                setTimeout(() => {
+                    successMessage.remove();
+                }, 2000);
+            });
+        });
+
+        // Cart button click handler
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            window.location.href = 'cart.html';
+        });
+
+        // Initialize cart count
+        updateCartCount();
+    });
+</script>
+<script>
+    // Initialize EmailJS with your user ID
+    (function() {
+        emailjs.init("dYghxc5v_Wq9NwB7x"); // Replace with your actual EmailJS user ID
+    })();
+
+    async function sendEmail(event) {
+        event.preventDefault();
+
+        // Get form elements
+        const submitButton = document.querySelector('#contactForm button[type="submit"]');
+        const submitText = document.getElementById('submitText');
+        const submitSpinner = document.getElementById('submitSpinner');
+        
+        // Show loading state
+        submitButton.disabled = true;
+        submitText.classList.add('hidden');
+        submitSpinner.classList.remove('hidden');
+
+        try {
+            const templateParams = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Send email using EmailJS
+            await emailjs.send(
+                'service_waterdrop', // Replace with your EmailJS service ID
+                'template_contact', // Replace with your EmailJS template ID
+                templateParams
+            );
+
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            successMessage.textContent = 'Message sent successfully!';
+            document.body.appendChild(successMessage);
+
+            // Reset form
+            document.getElementById('contactForm').reset();
+
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                successMessage.remove();
+            }, 3000);
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+            
+            // Show error message
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            errorMessage.textContent = 'Failed to send message. Please try again.';
+            document.body.appendChild(errorMessage);
+
+            // Remove error message after 3 seconds
+            setTimeout(() => {
+                errorMessage.remove();
+            }, 3000);
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            submitText.classList.remove('hidden');
+            submitSpinner.classList.add('hidden');
+        }
+    }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userProfileContainer = document.getElementById('userProfileContainer');
+        const authButtons = document.getElementById('authButtons');
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+        
+        // Check login status and update UI
+        function updateProfileUI() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            
+            if (isLoggedIn) {
+                // Update profile information
+                document.getElementById('userPhoto').src = localStorage.getItem('userPhoto');
+                document.getElementById('userName').textContent = localStorage.getItem('userName').split(' ')[0];
+                document.getElementById('userEmail').textContent = localStorage.getItem('userEmail');
+                
+                // Show/hide elements
+                userProfileContainer.classList.remove('hidden');
+                authButtons.classList.add('hidden');
+            } else {
+                userProfileContainer.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+            }
+        }
+
+        // Toggle dropdown
+        profileBtn?.addEventListener('click', () => {
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileBtn?.contains(e.target)) {
+                profileDropdown?.classList.add('hidden');
+            }
+        });
+
+        // Sign out function
+        window.signOut = async () => {
+            try {
+                // Clear local storage
+                localStorage.clear();
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                successMessage.textContent = 'Signed out successfully!';
+                document.body.appendChild(successMessage);
+                
+                // Redirect after short delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        };
+
+        // Initial UI update
+        updateProfileUI();
+    });
+</script>
+</body>
+</html>
