@@ -74,7 +74,9 @@ This project is deployed using Netlify. Every push to the main branch will autom
 4. Deploy!
 
 ## 📸 Screenshots
-![image screenshot]()
+![image screenshot](https://github.com/Indra1806/WATEERDROP/blob/main/images/Screenshot%202025-05-30%20213817.png)
+[![Watch the video](https://github.com/Indra1806/WATEERDROP/blob/main/images/livepage.mp4)
+
 ## 📬 Contact
 If you have any questions or feedback, feel free to contact:
 * Email: indra.ug2022@gmail.com
