@@ -75,7 +75,11 @@ This project is deployed using Netlify. Every push to the main branch will autom
 
 ## 📸 Screenshots
 ![image screenshot](https://github.com/Indra1806/WATEERDROP/blob/main/images/Screenshot%202025-05-30%20213817.png)
-[![Watch the video](https://github.com/Indra1806/WATEERDROP/blob/main/images/livepage.mp4)
+![image screenshot](https://github.com/Indra1806/WATEERDROP/blob/main/images/Screenshot%202025-05-30%20220840.png)
+![image screenshot](https://github.com/Indra1806/WATEERDROP/blob/main/images/Screenshot%202025-05-30%20220858.png)
+![image screenshot]()
+
+
 
 ## 📬 Contact
 If you have any questions or feedback, feel free to contact:
