@@ -47,7 +47,7 @@ waterdrop/
 
 bash
 
-git clone https://github.com/your-username/waterdrop.git
+git clone https://github.com/Indra1806/waterdrop.git
 cd waterdrop
 
 ## 🌐 Open in Browser
