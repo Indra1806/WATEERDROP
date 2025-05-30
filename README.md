@@ -3,8 +3,7 @@ WaterDrop is a smart water delivery app offering seamless booking, payment proce
 
 # 💧 WaterDrop - Clean & Modern Website
 
-![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_NETLIFY_BADGE_ID/deploy-status)
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4f7f434c-b048-4c4e-88cf-5dbc0f0f9fd4/deploy-status)](https://app.netlify.com/projects/wateerdrop/deploys)
 ## 🌐 Live Website
 
 🔗 [https://wateerdrop.netlify.app](https://wateerdrop.netlify.app)
