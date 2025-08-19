@@ -27,7 +27,7 @@ WaterDrop is a smart water delivery app offering seamless booking, payment proce
 ---
 
 ## 📁 Project Structure
-
+```
 waterdrop/
 ├── css/
 │ └── style.css # Custom styles
@@ -37,7 +37,7 @@ waterdrop/
 │ └── ... # Website assets
 ├── index.html # Main HTML file
 └── README.md # Project readme
-
+```
 
 ---
 
