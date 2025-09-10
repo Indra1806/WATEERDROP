@@ -124,14 +124,30 @@ export const getMyOrders = async (req, res) => {
  * Get all orders (admin only)
  */
 export const getAllOrders = async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ message: 'Access denied' });
-  }
   try {
-    const orders = await Order.find()
-      .populate('products.product')
-      .populate('user', 'name email');
-    res.json(orders);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const { status } = req.query;
+
+    const filter = {};
+    if (status) {
+      filter.status = status;
+    }
+
+    const orders = await Order.find(filter)
+      .populate('user', 'name email')
+      .populate('products.product', 'name price')
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await Order.countDocuments(filter);
+
+    res.json({
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      orders
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
