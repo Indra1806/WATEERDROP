@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import authRoutes from './routes/authRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -12,6 +13,9 @@ app.use('/auth', authRoutes);
 
 // Middleware for order routes
 app.use('/orders', orderRoutes);
+
+// Middleware for product routes
+app.use('/products', productRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
